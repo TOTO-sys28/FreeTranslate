@@ -6,9 +6,9 @@ A production-grade, privacy-first translation application with a premium UI/UX d
 
 ## 📺 Demo
 
-<video src="https://i.imgur.com/tCXIcjK.mp4" width="100%" controls>
-  Your browser does not support the video tag.
-</video>
+[![FreeTranslate Demo](https://i.imgur.com/tCXIcjK.jpg)](https://imgur.com/tCXIcjK)
+
+*Click the image above to watch the demo video.*
 
 ## ✨ Features
 
