@@ -5,7 +5,7 @@ A production-grade, privacy-first translation application with a premium UI/UX d
 
 ## 📺 Demo
 
-<video src="assets/demo.mp4" width="100%" controls>
+<video src="Assets/demo.mp4" width="100%" controls>
   Your browser does not support the video tag.
 </video>
 
