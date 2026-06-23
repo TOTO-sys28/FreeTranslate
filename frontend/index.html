@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FreeTranslate</title>
+  <link rel="stylesheet" href="style.css">
+  <meta name="description" content="A local, privacy-first translation application with premium design">
+</head>
+<body>
+
+  <!-- Particle Canvas Background -->
+  <canvas id="particle-canvas"></canvas>
+
+  <!-- Main Application Container -->
+  <div class="app-container">
+    
+    <!-- Header -->
+    <header class="app-header">
+      <h1 class="app-title">FreeTranslate</h1>
+      <div style="display: flex; gap: 0.75rem; align-items: center;">
+        <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme" title="Toggle theme">
+          <span id="theme-icon">🌙</span>
+        </button>
+        <span id="status-pill" class="status-pill">Loading...</span>
+      </div>
+    </header>
+
+    <!-- Language Selector Bar -->
+    <div class="lang-bar">
+      <!-- Source Language Custom Dropdown -->
+      <div class="custom-dropdown" id="source-lang-dropdown" tabindex="0" role="combobox" aria-label="Source language" aria-expanded="false">
+        <button class="dropdown-trigger" type="button">
+          <span class="dropdown-value">Auto Detect</span>
+          <svg class="dropdown-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
+        <div class="dropdown-menu" role="listbox">
+          <div class="dropdown-item selected" data-value="auto" role="option">Auto Detect</div>
+        </div>
+        <input type="hidden" id="source-lang-select" value="auto">
+      </div>
+      
+      <button id="swap-btn" class="btn-swap" aria-label="Swap languages" title="Swap languages">⇄</button>
+      
+      <!-- Target Language Custom Dropdown -->
+      <div class="custom-dropdown" id="target-lang-dropdown" tabindex="0" role="combobox" aria-label="Target language" aria-expanded="false">
+        <button class="dropdown-trigger" type="button">
+          <span class="dropdown-value">Loading...</span>
+          <svg class="dropdown-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
+        <div class="dropdown-menu" role="listbox">
+          <div class="dropdown-item" data-value="" role="option">Loading...</div>
+        </div>
+        <input type="hidden" id="target-lang-select" value="">
+      </div>
+    </div>
+
+    <!-- Main Content Panels -->
+    <main class="panels">
+      
+      <!-- Source Panel -->
+      <section class="panel panel-source">
+        <div class="panel-header">
+          <span class="panel-title">Source Text</span>
+          <span class="char-count" id="source-char-count">0 chars</span>
+        </div>
+        <textarea id="source-input" class="source-textarea" dir="auto" placeholder="Enter text to translate..."></textarea>
+      </section>
+
+      <!-- Target Panel -->
+      <section class="panel panel-target">
+        <div class="panel-header">
+          <span class="panel-title">Translation</span>
+          <span class="kbd">Esc</span><span class="sr-only">to stop</span>
+        </div>
+        
+        <div class="output-area">
+          <!-- Loading Skeleton -->
+          <div id="loading-skeleton" class="skeleton" aria-hidden="true">
+            <div class="skeleton-line"></div>
+            <div class="skeleton-line"></div>
+            <div class="skeleton-line"></div>
+            <div class="skeleton-line"></div>
+          </div>
+          
+          <div id="target-output" class="output-text empty" dir="auto">
+            <div class="empty-state">
+              <span class="empty-state-icon">🌍</span>
+              <p class="empty-state-title">Translation will appear here</p>
+              <small class="empty-state-subtitle">Enter text and press Ctrl+Enter to translate</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-header" style="margin-top: 1rem; margin-bottom: 0;">
+          <span class="panel-title">Actions</span>
+        </div>
+        <div style="display: flex; gap: 0.5rem; margin-top: 0.75rem;">
+          <button id="copy-btn" class="btn btn-ghost hidden" aria-label="Copy to clipboard">Copy</button>
+          <button id="download-btn" class="btn btn-ghost hidden" aria-label="Download as text file">Download</button>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Bottom Toolbar -->
+    <footer class="toolbar">
+      <div class="toolbar-left">
+        <!-- Settings Controls -->
+        <div class="settings-group">
+          <span class="settings-label">Model</span>
+          <div class="custom-dropdown custom-dropdown-sm" id="model-dropdown" tabindex="0" role="combobox" aria-label="Select translation model" aria-expanded="false">
+            <button class="dropdown-trigger" type="button">
+              <span class="dropdown-value">NLLB 200 (600M)</span>
+              <svg class="dropdown-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+            <div class="dropdown-menu" role="listbox">
+              <div class="dropdown-item selected" data-value="nllb_600M" role="option">NLLB 200 (600M)</div>
+              <div class="dropdown-item" data-value="nllb_1_3B" role="option">NLLB 200 (1.3B)</div>
+            </div>
+            <input type="hidden" id="model-select" value="nllb_600M">
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <span class="settings-label">Device</span>
+          <button id="device-toggle" class="btn-icon">CPU</button>
+          <button id="apply-btn" class="btn btn-primary">Load Model</button>
+        </div>
+
+        <div class="settings-group">
+          <label class="toggle-wrapper">
+            <input type="checkbox" id="stream-toggle" checked>
+            <span class="toggle-label">Stream output</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="toolbar-right">
+        <!-- File Operations -->
+        <label class="btn-icon" title="Load text from a file">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="12" y1="18" x2="12" y2="12"></line>
+            <line x1="9" y1="15" x2="15" y2="15"></line>
+          </svg>
+          Load Text
+          <input type="file" id="file-input" accept=".txt,.md,.json,.cfg,.conf">
+        </label>
+        <span id="file-name" class="file-name"></span>
+
+        <label class="btn-icon" title="Translate a full document directly">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+          Document
+          <input type="file" id="doc-input" accept=".txt,.md,.docx,.pdf">
+        </label>
+        <a id="doc-download" class="doc-download" href="#" target="_blank" aria-label="Download translated document">↓ Result</a>
+      </div>
+
+      <div class="toolbar-right">
+        <button id="clear-btn" class="btn btn-icon">Clear</button>
+        <button id="stop-btn" class="btn btn-ghost" disabled>Stop</button>
+        <button id="translate-btn" class="btn btn-primary">Translate</button>
+      </div>
+    </footer>
+
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <!-- Custom Dropdown Component -->
+  <script src="dropdown.js"></script>
+
+  <!-- Particle System Script -->
+  <script>
+    (function() {
+      const canvas = document.getElementById('particle-canvas');
+      const ctx = canvas.getContext('2d');
+      let particles = [];
+      let mouse = { x: null, y: null };
+      
+      // Configuration
+      const config = {
+        particleCount: 80,
+        connectionDistance: 120,
+        mouseRepelDistance: 150,
+        particleSpeed: 0.3,
+        particleSize: 1.5
+      };
+      
+      // Resize canvas
+      function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+      
+      window.addEventListener('resize', resize);
+      resize();
+      
+      // Mouse tracking
+      document.addEventListener('mousemove', (e) => {
+        mouse.x = e.clientX;
+        mouse.y = e.clientY;
+      });
+      
+      document.addEventListener('mouseleave', () => {
+        mouse.x = null;
+        mouse.y = null;
+      });
+      
+      // Particle class
+      class Particle {
+        constructor() {
+          this.reset();
+        }
+        
+        reset() {
+          this.x = Math.random() * canvas.width;
+          this.y = Math.random() * canvas.height;
+          this.vx = (Math.random() - 0.5) * config.particleSpeed;
+          this.vy = (Math.random() - 0.5) * config.particleSpeed;
+          this.size = Math.random() * config.particleSize + 0.5;
+        }
+        
+        update() {
+          // Movement
+          this.x += this.vx;
+          this.y += this.vy;
+          
+          // Mouse repulsion
+          if (mouse.x !== null && mouse.y !== null) {
+            const dx = mouse.x - this.x;
+            const dy = mouse.y - this.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            if (distance < config.mouseRepelDistance) {
+              const force = (config.mouseRepelDistance - distance) / config.mouseRepelDistance;
+              const angle = Math.atan2(dy, dx);
+              this.vx -= Math.cos(angle) * force * 0.5;
+              this.vy -= Math.sin(angle) * force * 0.5;
+            }
+          }
+          
+          // Boundary check
+          if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+          if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+        }
+        
+        draw() {
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+          ctx.fill();
+        }
+      }
+      
+      // Initialize particles
+      function init() {
+        particles = [];
+        for (let i = 0; i < config.particleCount; i++) {
+          particles.push(new Particle());
+        }
+      }
+      
+      // Draw connections
+      function drawConnections() {
+        for (let i = 0; i < particles.length; i++) {
+          for (let j = i + 1; j < particles.length; j++) {
+            const dx = particles[i].x - particles[j].x;
+            const dy = particles[i].y - particles[j].y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            if (distance < config.connectionDistance) {
+              const opacity = (1 - distance / config.connectionDistance) * 0.2;
+              ctx.beginPath();
+              ctx.moveTo(particles[i].x, particles[i].y);
+              ctx.lineTo(particles[j].x, particles[j].y);
+              ctx.strokeStyle = `rgba(255, 255, 255, ${opacity})`;
+              ctx.lineWidth = 0.5;
+              ctx.stroke();
+            }
+          }
+        }
+      }
+      
+      // Animation loop
+      function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        particles.forEach(particle => {
+          particle.update();
+          particle.draw();
+        });
+        
+        drawConnections();
+        
+        requestAnimationFrame(animate);
+      }
+      
+      // Start
+      init();
+      animate();
+    })();
+  </script>
+
+  <!-- Client-side Logic Script -->
+  <script src="app.js"></script>
+</body>
+</html>
