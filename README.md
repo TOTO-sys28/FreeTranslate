@@ -56,14 +56,72 @@ A production-grade, privacy-first translation application with a premium UI/UX d
 
 ## 🚀 Installation
 
-### 1. Clone the Repository
+### Option 1: Docker (Recommended)
+
+The easiest way to run FreeTranslate is using Docker. This ensures consistent environments across all platforms.
+
+#### Using Docker Compose
+
+```bash
+# Clone the repository
+git clone https://github.com/TOTO-sys28/FreeTranslate.git
+cd FreeTranslate
+
+# Build and start the container
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop the container
+docker-compose down
+```
+
+The application will be available at `http://localhost:8000`
+
+#### Using Docker directly
+
+```bash
+# Clone the repository
+git clone https://github.com/TOTO-sys28/FreeTranslate.git
+cd FreeTranslate
+
+# Build the image
+docker build -t freetranslate .
+
+# Run the container
+docker run -d -p 8000:8000 -v $(pwd)/ct2_models:/app/ct2_models --name freetranslate freetranslate
+```
+
+#### GPU Support with Docker
+
+If you have an NVIDIA GPU and want to use GPU acceleration:
+
+1. Install [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html)
+2. Uncomment the GPU section in `docker-compose.yml`
+3. Run with GPU support:
+
+```bash
+docker-compose up -d
+```
+
+#### Docker Notes
+
+- Models are downloaded on first run and persisted in the `ct2_models` directory
+- The container uses Python 3.11 slim image for efficiency
+- Port 8000 is exposed for the web interface and API
+- For GPU support, ensure you have nvidia-docker2 installed
+
+### Option 2: Manual Installation
+
+#### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/TOTO-sys28/FreeTranslate.git
 cd FreeTranslate
 ```
 
-### 2. Install Python Dependencies
+#### 2. Install Python Dependencies
 
 Create a virtual environment (recommended):
 
@@ -83,7 +141,7 @@ Install dependencies:
 pip install -r requirements.txt
 ```
 
-### 3. (Optional) Set Hugging Face Token
+#### 3. (Optional) Set Hugging Face Token
 
 If you want to use models that require authentication:
 
@@ -95,7 +153,7 @@ set HF_TOKEN=your_token_here
 export HF_TOKEN=your_token_here
 ```
 
-### 4. Start the Backend Server
+#### 4. Start the Backend Server
 
 ```bash
 python -m backend.main

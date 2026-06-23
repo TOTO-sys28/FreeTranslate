@@ -55,3 +55,6 @@ ct2_models/
 
 # Devin
 .devin/
+
+# Docker
+docker-compose.override.yml
