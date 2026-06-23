@@ -402,7 +402,8 @@ async def sse_translate(
 
     for chunk in chunks:
         if not chunk.strip():
-            yield f"data: {json.dumps({'token': '\n'})}\n\n"
+            token_data = json.dumps({'token': '\n'})
+            yield f"data: {token_data}\n\n"
             continue
         result = await loop.run_in_executor(None, translate_single, chunk)
         yield f"data: {json.dumps({'token': result + ' '})}\n\n"
