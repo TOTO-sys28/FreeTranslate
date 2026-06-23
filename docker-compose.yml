@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  freetranslate:
+    build: .
+    container_name: freetranslate
+    ports:
+      - "8000:8000"
+    volumes:
+      # Mount models directory to persist downloaded models
+      - ./ct2_models:/app/ct2_models
+    environment:
+      - PYTHONUNBUFFERED=1
+      - CT2_MODELS_DIR=/app/ct2_models
+      # Optional: Set Hugging Face token if needed
+      # - HF_TOKEN=your_token_here
+    restart: unless-stopped
+    # GPU support (uncomment if you have NVIDIA GPU and nvidia-docker installed)
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
