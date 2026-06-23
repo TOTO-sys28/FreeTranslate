@@ -4,10 +4,12 @@ A production-grade, privacy-first translation application with a premium UI/UX d
 
 
 ## 📺 Demo
+## 📺 Demo
 
-[Watch Demo Video](https://github.com/TOTO-sys28/FreeTranslate/raw/main/Assets/demo.mp4)
-
-
+<video width="100%" controls>
+  <source src="https://github.com/TOTO-sys28/FreeTranslate/raw/main/Assets/demo.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
 
 ## ✨ Features
 
