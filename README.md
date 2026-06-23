@@ -2,6 +2,14 @@
 
 A production-grade, privacy-first translation application with a premium UI/UX design. FreeTranslate runs entirely locally on your machine, ensuring your text never leaves your device. It features a modern web interface and a browser extension for seamless in-page translation.
 
+
+## 📺 Demo
+
+<video src="assets/demo.mp4" width="100%" controls>
+  Your browser does not support the video tag.
+</video>
+
+
 ## ✨ Features
 
 ### 🌐 Translation Capabilities
